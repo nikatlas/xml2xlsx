@@ -27,15 +27,13 @@ services:
     networks:
       - internal
 
-  products:
+  xml2xlsx:
     build:
       context: .
     image: converter
     env_file: docker-compose.env
     environment:
-      SERVICES: products
-    depends_on:
-      - mongo
+      SERVICES: xml2xlsx
     networks:
       - internal
 

@@ -92,6 +92,7 @@ module.exports = {
 				const wb = XLSX.utils.book_new();
 
 				const res = await xml.parseStringPromise(response.data);
+				console.log(res);
 				const arr = res["beautyhome"]["products"][0]["product"];
 				const fields = Object.keys(arr[0]);
 				for(let i in arr){

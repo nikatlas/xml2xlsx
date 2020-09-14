@@ -82,11 +82,11 @@ module.exports = {
 				bodyParsers: {
 					json: {
 						strict: false,
-						limit: "1MB"
+						limit: "100MB"
 					},
 					urlencoded: {
 						extended: true,
-						limit: "1MB"
+						limit: "100MB"
 					}
 				},
 
