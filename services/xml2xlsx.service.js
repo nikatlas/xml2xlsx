@@ -62,7 +62,8 @@ module.exports = {
 			rest: "GET /convert",
 			params: {
 				url: "string",
-				path: "string"
+				path: "string",
+				swap: "string"
 			},
 			async handler(ctx) {
 				ctx.meta.$responseType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -70,7 +71,9 @@ module.exports = {
 					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 					"Content-Disposition": "attachment; filename=data.xlsx"
 				};
-
+				ctx.options.parentCtx.params.res.writeHead(200, {
+					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+				});
 
 				// axios image download with response type "stream"
 				const response = await Axios({
@@ -83,6 +86,7 @@ module.exports = {
 
 				const res = await xml.parseStringPromise(response.data);
 				
+
 				let path = ctx.params.path.split(".");
 				//const arr = res["beautyhome"]["products"][0]["product"];
 				let temp = res;
@@ -91,10 +95,11 @@ module.exports = {
 				}
 				const arr = temp || [];
 
+				const swaps = JSON.parse(ctx.params.swap || "{}");
 				const fields = Object.keys(arr[0]);
 				for(let i in arr){
 					for(let j in fields) {	
-						arr[i][fields[j]] = arr[i][fields[j]][0];
+						arr[i][fields[j]] = swaps[arr[i][fields[j]][0]] ? swaps[arr[i][fields[j]][0]] : arr[i][fields[j]][0];
 					}
 				}
 				const xl = await XLSX.utils.json_to_sheet(arr);
