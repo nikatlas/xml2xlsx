@@ -67,6 +67,7 @@ module.exports = {
 			async handler(ctx) {
 				ctx.meta.$responseType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 				ctx.meta.$responseHeaders = {
+					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 					"Content-Disposition": "attachment; filename=data.xlsx"
 				};
 
