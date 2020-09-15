@@ -58,7 +58,44 @@ module.exports = {
 	// More info: https://moleculer.services/docs/0.14/networking.html
 	// Note: During the development, you don't need to define it because all services will be loaded locally.
 	// In production you can set it via `TRANSPORTER=nats://localhost:4222` environment variable.
-	transporter: null,
+	transporter: {
+		type: "TCP",
+		options: {
+			// Enable UDP discovery
+			udpDiscovery: true,
+			// Reusing UDP server socket
+			udpReuseAddr: true,
+
+			// UDP port
+			udpPort: 4445,
+			// UDP bind address (if null, bind on all interfaces)
+			udpBindAddress: null,
+			// UDP sending period (seconds)
+			udpPeriod: 30,
+
+			// Multicast address.
+			udpMulticast: "239.0.0.0",
+			// Multicast TTL setting
+			udpMulticastTTL: 1,
+
+			// Send broadcast (Boolean, String, Array<String>)
+			udpBroadcast: false,
+
+			// TCP server port. Null or 0 means random port
+			port: null,
+			// Static remote nodes address list (when UDP discovery is not available)
+			urls: null,
+			// Use hostname as preffered connection address
+			useHostname: true,
+
+			// Gossip sending period in seconds
+			gossipPeriod: 2,
+			// Maximum enabled outgoing connections. If reach, close the old connections
+			maxConnections: 32,
+			// Maximum TCP packet size
+			maxPacketSize: 20 * 1024 * 1024            
+		}
+	},
 
 	// Define a cacher.
 	// More info: https://moleculer.services/docs/0.14/caching.html
@@ -70,7 +107,7 @@ module.exports = {
 	serializer: "JSON",
 
 	// Number of milliseconds to wait before reject a request with a RequestTimeout error. Disabled: 0
-	requestTimeout: 30 * 1000,
+	requestTimeout: 0,//60 * 1000,
 
 	// Retry policy settings. More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Retry
 	retryPolicy: {

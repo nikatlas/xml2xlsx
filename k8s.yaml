@@ -10,11 +10,7 @@ data:
   LOGLEVEL: info
   SERVICEDIR: services
   
-  
-  
-  
-  
-  
+ 
   
   CACHER: Memory
   

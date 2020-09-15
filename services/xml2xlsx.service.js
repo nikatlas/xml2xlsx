@@ -1,8 +1,8 @@
 "use strict";
 
-const Axios = require('axios');
-const xml = require('xml2js');
-const XLSX = require('xlsx');
+const Axios = require("axios");
+const xml = require("xml2js");
+const XLSX = require("xlsx");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -10,7 +10,7 @@ const XLSX = require('xlsx');
 
 module.exports = {
 	name: "xml2xlsx",
-	version: 2,
+	version: 1,
 
 	/**
 	 * Mixins
@@ -21,19 +21,7 @@ module.exports = {
 	 * Settings
 	 */
 	settings: {
-		// Available fields in the responses
-		fields: [
-			"_id",
-			"name",
-			"quantity",
-			"price"
-		],
-
-		// Validator for the `create` & `insert` actions.
-		entityValidator: {
-			name: "string|min:3",
-			price: "number|positive"
-		}
+		
 	},
 
 	/**
@@ -70,7 +58,7 @@ module.exports = {
 
 		// --- ADDITIONAL ACTIONS ---
 
-		downloadCSV: {
+		convert: {
 			rest: "GET /convert",
 			params: {
 				url: "string"
