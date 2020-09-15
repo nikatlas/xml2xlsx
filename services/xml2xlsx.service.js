@@ -3,11 +3,21 @@
 const Axios = require("axios");
 const xml = require("xml2js");
 const XLSX = require("xlsx");
+const utf8 = require("utf8");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
  */
+function toUtf8(badstr) {
+	try {
+		let s =  utf8.decode(badstr);
+		// console.log("SUCCESS" , s);
+		return s;
+	} catch (e) {
 
+		return badstr;
+	}
+}
 module.exports = {
 	name: "xml2xlsx",
 	version: 1,
@@ -100,6 +110,7 @@ module.exports = {
 					for(let j in fields) {	
 						arr[i][fields[j]] = swaps[arr[i][fields[j]][0]] ? swaps[arr[i][fields[j]][0]] : arr[i][fields[j]][0];
 						arr[i][fields[j]] = delimiters[fields[j]] ? arr[i][fields[j]].split(delimiters[fields[j]])[0] : arr[i][fields[j]];
+						arr[i][fields[j]] = toUtf8(arr[i][fields[j]]);
 					}
 				}
 				const xl = await XLSX.utils.json_to_sheet(arr);
