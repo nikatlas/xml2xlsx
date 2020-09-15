@@ -63,7 +63,8 @@ module.exports = {
 			params: {
 				url: "string",
 				path: "string",
-				swap: "string"
+				swap: "string",
+				splitter: "string"
 			},
 			async handler(ctx) {
 				ctx.meta.$responseType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -93,10 +94,12 @@ module.exports = {
 				const arr = temp || [];
 
 				const swaps = JSON.parse(ctx.params.swap || "{}");
+				const delimiters = JSON.parse(ctx.params.splitter || "{}");
 				const fields = Object.keys(arr[0]);
 				for(let i in arr){
 					for(let j in fields) {	
 						arr[i][fields[j]] = swaps[arr[i][fields[j]][0]] ? swaps[arr[i][fields[j]][0]] : arr[i][fields[j]][0];
+						arr[i][fields[j]] = delimiters[fields[j]] ? arr[i][fields[j]].split(delimiters[fields[j]])[0] : arr[i][fields[j]];
 					}
 				}
 				const xl = await XLSX.utils.json_to_sheet(arr);
