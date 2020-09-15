@@ -71,9 +71,6 @@ module.exports = {
 					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 					"Content-Disposition": "attachment; filename=data.xlsx"
 				};
-				ctx.options.parentCtx.params.res.writeHead(200, {
-					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-				});
 
 				// axios image download with response type "stream"
 				const response = await Axios({
