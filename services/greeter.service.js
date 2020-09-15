@@ -38,6 +38,20 @@ module.exports = {
 				return "Hello Moleculer";
 			}
 		},
+		/**
+		 * Say a 'Hello2' action.
+		 *
+		 * @returns
+		 */
+		hello2: {
+			rest: {
+				method: "GET",
+				path: "/hello2"
+			},
+			async handler() {
+				return "Hello2 Moleculer";
+			}
+		},
 
 		/**
 		 * Welcome, a username

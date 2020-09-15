@@ -1,16 +1,15 @@
-FROM node:current-alpine
+FROM node:8-alpine
 
 ENV NODE_ENV=production
 
 RUN mkdir /app
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package.json .
 
 RUN npm install --production
+RUN npm install nats --save
 
 COPY . .
 
-EXPOSE 3000
-
-CMD ["npm", "start"]
+CMD ["npm", "start"]  # Execute moleculer-runner

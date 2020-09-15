@@ -139,6 +139,34 @@ spec:
 
 ---
 #########################################################
+# Products service
+#########################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xml2xlsx
+spec:
+  selector:
+    matchLabels:
+      app: xml2xlsx
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: xml2xlsx
+    spec:
+      containers:
+      - name: xml2xlsx
+        image: converter
+        envFrom:
+        - configMapRef:
+            name: common-env
+        env:
+          - name: SERVICES
+            value: xml2xlsx
+
+---
+#########################################################
 # MongoDB server
 #########################################################
 apiVersion: apps/v1

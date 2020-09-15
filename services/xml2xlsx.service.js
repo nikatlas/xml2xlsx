@@ -10,7 +10,7 @@ const XLSX = require('xlsx');
 
 module.exports = {
 	name: "xml2xlsx",
-	// version: 1
+	version: 2,
 
 	/**
 	 * Mixins
