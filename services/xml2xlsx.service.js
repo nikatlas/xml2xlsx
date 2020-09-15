@@ -61,7 +61,8 @@ module.exports = {
 		convert: {
 			rest: "GET /convert",
 			params: {
-				url: "string"
+				url: "string",
+				path: "string"
 			},
 			async handler(ctx) {
 				ctx.meta.$responseType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -80,8 +81,15 @@ module.exports = {
 				const wb = XLSX.utils.book_new();
 
 				const res = await xml.parseStringPromise(response.data);
-				console.log(res);
-				const arr = res["beautyhome"]["products"][0]["product"];
+				
+				let path = ctx.params.path.split(".");
+				//const arr = res["beautyhome"]["products"][0]["product"];
+				let temp = res;
+				for(let k in path) {
+					temp = temp[path[k]];
+				}
+				const arr = temp || [];
+
 				const fields = Object.keys(arr[0]);
 				for(let i in arr){
 					for(let j in fields) {	
@@ -90,7 +98,7 @@ module.exports = {
 				}
 				const xl = await XLSX.utils.json_to_sheet(arr);
 				/* Add the worksheet to the workbook */
-				XLSX.utils.book_append_sheet(wb, xl, "beautyhome");
+				XLSX.utils.book_append_sheet(wb, xl, "Sheet 1");
 
 				return XLSX.write(wb, {
 					type: "buffer"
