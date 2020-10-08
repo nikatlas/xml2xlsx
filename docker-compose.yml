@@ -36,6 +36,15 @@ services:
       SERVICES: xml2xlsx
     networks:
       - internal
+  xlsx:
+    build:
+      context: .
+    image: converter
+    env_file: docker-compose.env
+    environment:
+      SERVICES: xlsx
+    networks:
+      - internal
 
   mongo:
     image: mongo:4
