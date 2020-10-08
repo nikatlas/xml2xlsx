@@ -122,6 +122,7 @@ module.exports = {
 				});
 			}
 		},
+		
 
 		/**
 		 * Increase the quantity of the product item.

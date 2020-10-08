@@ -34,7 +34,7 @@ module.exports = {
 				method: "GET",
 				path: "/hello"
 			},
-			async handler() {
+			async handler(ctx) {
 				return "Hello Moleculer";
 			}
 		},
