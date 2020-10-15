@@ -122,6 +122,111 @@ module.exports = {
 				});
 			}
 		},
+
+		rssconvert: {
+			rest: "GET /rssconvert",
+			params: {
+				url: "string",
+				path: "string",
+				swap: "string",
+				splitter: "string"
+			},
+			async handler(ctx) {
+				ctx.meta.$responseType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+				ctx.meta.$responseHeaders = {
+					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+					"Content-Disposition": "attachment; filename=data.xlsx"
+				};
+
+				// axios image download with response type "stream"
+				const response = await Axios({
+					method: "GET",
+					url: ctx.params.url,
+					//responseType: 'stream'
+				});
+
+
+				/* create a new blank workbook */
+				const wb = XLSX.utils.book_new();
+				const res = await xml.parseStringPromise(response.data);
+				let results = [];
+
+				let model = {};
+				for(let c in res.rss.channel) {
+					for(let i in res.rss.channel[c].item) {
+						let item = res.rss.channel[c].item[i];
+						if(!item.option)
+							continue;
+						let arr = item.option.map((op) => op.option_name[0]);
+						arr.forEach((itema) => {
+							model[itema] = "";
+						});
+					}
+				}				
+				console.log(model);
+				for(let c in res.rss.channel) {
+					for(let i in res.rss.channel[c].item){
+						let item = res.rss.channel[c].item[i];
+						let fitem = {
+							...model,
+							title: item.title[0],
+							link: item.link[0],
+							description: item.description[0],
+							collection: item.collection[0],
+							image_link: item.image_link && item.image_link.join(";"),
+							model_number: item.model_number[0],
+							mpn: item.mpn[0],
+							category: item.category && item.category.join(">"),
+							quantity: item.quantity[0],
+							weight: item.weight[0],
+							price: item.price[0],
+							availability: item.availability[0]
+						};
+
+						if(!item.option || item.option.length == 0){
+							results.push(fitem);
+							continue;
+						}
+
+						let optionSizes = item.option.map(node => node.option_value.length);
+						let counter = optionSizes.map(s => 0);
+						const lastbait = optionSizes.length;
+						counter[counter.length] = 0;
+						do {
+							fitem.price = parseFloat(item.price[0]);
+							let skipFlag = false;
+							for(let o=0;o<item.option.length;o++) {
+								let opt = item.option[o];
+								let name = opt.option_name[0];
+								let cval = opt.option_value[counter[o]];
+								let pimpact = cval.option_value_price[0];
+								fitem[name] = cval.option_value_name[0];
+								fitem.price = parseFloat(fitem.price) + ((cval.option_value_price_prefix[0] == "+") ? parseFloat(pimpact) : (-parseFloat(pimpact)));
+								skipFlag = skipFlag || (fitem[name]=="Επιθυμητή διάσταση");
+							}
+							if(!skipFlag){
+								results.push({...fitem});
+							}
+							counter[0]++;
+							let p =0;
+							while(counter[p] == optionSizes[p]){
+								counter[p] = 0;
+								p++;
+								counter[p]++;
+							}
+						} while(counter[lastbait] == 0);
+					}
+				}
+
+				const xl = await XLSX.utils.json_to_sheet(results);
+				/* Add the worksheet to the workbook */
+				XLSX.utils.book_append_sheet(wb, xl, "Data");
+
+				return XLSX.write(wb, {
+					type: "buffer"
+				});
+			}
+		},
 		
 
 		/**
