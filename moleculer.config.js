@@ -93,7 +93,7 @@ module.exports = {
 			// Maximum enabled outgoing connections. If reach, close the old connections
 			maxConnections: 32,
 			// Maximum TCP packet size
-			maxPacketSize: 20 * 1024 * 1024            
+			maxPacketSize: 200 * 1024 * 1024            
 		}
 	},
 
