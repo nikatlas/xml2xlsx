@@ -163,7 +163,6 @@ module.exports = {
 						});
 					}
 				}				
-				console.log(model);
 				for(let c in res.rss.channel) {
 					for(let i in res.rss.channel[c].item){
 						let item = res.rss.channel[c].item[i];
@@ -182,39 +181,81 @@ module.exports = {
 							price: item.price[0],
 							availability: item.availability[0]
 						};
+						// if(item.title[0] == "Διακοσμιτικό Ριχτάρι Letters 04"){
+						// 	console.log("M:",item.option);
+						// 	return;
+						// }
 
 						if(!item.option || item.option.length == 0){
 							results.push(fitem);
 							continue;
 						}
 
-						let optionSizes = item.option.map(node => node.option_value.length);
-						let counter = optionSizes.map(s => 0);
-						const lastbait = optionSizes.length;
-						counter[counter.length] = 0;
-						do {
+						let headers = item.option.reduce((p,node) => {
+							p[node.option_name[0]] = node;
+							return p;
+						}, {});
+						let hd = headers["Διάσταση"];
+						// console.log("HD",hd, headers);
+						for (let i = 0; hd && i < hd.option_value.length; i++) {
+							let dim = hd.option_value[i];
+							let dimimp = dim.option_value_price[0];
+							fitem["Διάσταση"] = dim.option_value_name[0];
+							if(fitem["Διάσταση"] == "Επιθυμητή διάσταση")
+								continue;
 							fitem.price = parseFloat(item.price[0]);
-							let skipFlag = false;
-							for(let o=0;o<item.option.length;o++) {
-								let opt = item.option[o];
-								let name = opt.option_name[0];
-								let cval = opt.option_value[counter[o]];
-								let pimpact = cval.option_value_price[0];
-								fitem[name] = cval.option_value_name[0];
-								fitem.price = parseFloat(fitem.price) + ((cval.option_value_price_prefix[0] == "+") ? parseFloat(pimpact) : (-parseFloat(pimpact)));
-								skipFlag = skipFlag || (fitem[name]=="Επιθυμητή διάσταση");
-							}
-							if(!skipFlag){
+							fitem.price = parseFloat(fitem.price) + ((dim.option_value_price_prefix[0] == "+") ? parseFloat(dimimp) : (-parseFloat(dimimp)));
+							results.push({...fitem});
+						}
+
+						let hp = headers["Πλάτος"];
+						let hm = headers["Μήκος"];
+						for (let j = 0; hp && j < hp.option_value.length; j++) {
+							for (let i = 0; hm && i < hm.option_value.length; i++) {
+								let mikos = hm.option_value[i];
+								let mikosimpact = mikos.option_value_price[0];
+								let platos = hp.option_value[j];
+								let platosimpact = platos.option_value_price[0];
+
+								fitem["Διάσταση"] = "Επιθυμητή διάσταση";
+								fitem["Μήκος"] = mikos.option_value_name[0];
+								fitem["Πλάτος"] = platos.option_value_name[0];
+								fitem.price = parseFloat(item.price[0]);
+								fitem.price = parseFloat(fitem.price) + ((mikos.option_value_price_prefix[0] == "+") ? parseFloat(mikosimpact) : (-parseFloat(mikosimpact)));
+								fitem.price = parseFloat(fitem.price) + ((platos.option_value_price_prefix[0] == "+") ? parseFloat(platosimpact) : (-parseFloat(platosimpact)));
 								results.push({...fitem});
 							}
-							counter[0]++;
-							let p =0;
-							while(counter[p] == optionSizes[p]){
-								counter[p] = 0;
-								p++;
-								counter[p]++;
-							}
-						} while(counter[lastbait] == 0);
+						}
+
+
+
+						// let optionSizes = item.option.map(node => node.option_value.length);
+						// let counter = optionSizes.map(s => 0);
+						// const lastbait = optionSizes.length;
+						// counter[counter.length] = 0;
+						// do {
+						// 	fitem.price = parseFloat(item.price[0]);
+						// 	let skipFlag = false;
+						// 	for(let o=0;o<item.option.length;o++) {
+						// 		let opt = item.option[o];
+						// 		let name = opt.option_name[0];
+						// 		let cval = opt.option_value[counter[o]];
+						// 		let pimpact = cval.option_value_price[0];
+						// 		fitem[name] = cval.option_value_name[0];
+						// 		fitem.price = parseFloat(fitem.price) + ((cval.option_value_price_prefix[0] == "+") ? parseFloat(pimpact) : (-parseFloat(pimpact)));
+						// 		skipFlag = skipFlag || (fitem[name]=="Επιθυμητή διάσταση");
+						// 	}
+						// 	if(!skipFlag){
+						// 		results.push({...fitem});
+						// 	}
+						// 	counter[0]++;
+						// 	let p =0;
+						// 	while(counter[p] == optionSizes[p]){
+						// 		counter[p] = 0;
+						// 		p++;
+						// 		counter[p]++;
+						// 	}
+						// } while(counter[lastbait] == 0);
 					}
 				}
 
