@@ -31,7 +31,7 @@ module.exports = {
 	 * Settings
 	 */
 	settings: {
-		
+
 	},
 
 	/**
@@ -93,7 +93,7 @@ module.exports = {
 				const wb = XLSX.utils.book_new();
 
 				const res = await xml.parseStringPromise(response.data);
-				
+
 
 				let path = ctx.params.path.split(".");
 				//const arr = res["beautyhome"]["products"][0]["product"];
@@ -107,7 +107,7 @@ module.exports = {
 				const delimiters = JSON.parse(ctx.params.splitter || "{}");
 				const fields = Object.keys(arr[0]);
 				for(let i in arr){
-					for(let j in fields) {	
+					for(let j in fields) {
 						arr[i][fields[j]] = swaps[arr[i][fields[j]][0]] ? swaps[arr[i][fields[j]][0]] : arr[i][fields[j]][0];
 						arr[i][fields[j]] = delimiters[fields[j]] ? arr[i][fields[j]].split(delimiters[fields[j]])[0] : arr[i][fields[j]];
 						arr[i][fields[j]] = toUtf8(arr[i][fields[j]]);
@@ -137,20 +137,20 @@ module.exports = {
 					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 					"Content-Disposition": "attachment; filename=data.xlsx"
 				};
-
+				console.log("Before request");
 				// axios image download with response type "stream"
 				const response = await Axios({
 					method: "GET",
 					url: ctx.params.url,
 					//responseType: 'stream'
 				});
-
+				console.log("After request");
 
 				/* create a new blank workbook */
 				const wb = XLSX.utils.book_new();
 				const res = await xml.parseStringPromise(response.data);
 				let results = [];
-
+				console.log("After Parse string");
 				let model = {};
 				for(let c in res.rss.channel) {
 					for(let i in res.rss.channel[c].item) {
@@ -162,7 +162,7 @@ module.exports = {
 							model[itema] = "";
 						});
 					}
-				}				
+				}
 				for(let c in res.rss.channel) {
 					for(let i in res.rss.channel[c].item){
 						let item = res.rss.channel[c].item[i];
@@ -258,17 +258,17 @@ module.exports = {
 						// } while(counter[lastbait] == 0);
 					}
 				}
-
+				console.log("After parsing");
 				const xl = await XLSX.utils.json_to_sheet(results);
 				/* Add the worksheet to the workbook */
 				XLSX.utils.book_append_sheet(wb, xl, "Data");
-
+				console.log("Before write");
 				return XLSX.write(wb, {
 					type: "buffer"
 				});
 			}
 		},
-		
+
 
 		/**
 		 * Increase the quantity of the product item.
