@@ -1,5 +1,5 @@
 "use strict";
-
+const https = require("https");
 const Axios = require("axios");
 const xml = require("xml2js");
 const XLSX = require("xlsx");
@@ -137,20 +137,23 @@ module.exports = {
 					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 					"Content-Disposition": "attachment; filename=data.xlsx"
 				};
-				console.log("Before request");
+
 				// axios image download with response type "stream"
 				const response = await Axios({
 					method: "GET",
 					url: ctx.params.url,
+					httpsAgent: new https.Agent({
+						rejectUnauthorized: false
+					}),
 					//responseType: 'stream'
 				});
-				console.log("After request");
+
 
 				/* create a new blank workbook */
 				const wb = XLSX.utils.book_new();
 				const res = await xml.parseStringPromise(response.data);
 				let results = [];
-				console.log("After Parse string");
+
 				let model = {};
 				for(let c in res.rss.channel) {
 					for(let i in res.rss.channel[c].item) {
@@ -258,11 +261,11 @@ module.exports = {
 						// } while(counter[lastbait] == 0);
 					}
 				}
-				console.log("After parsing");
+
 				const xl = await XLSX.utils.json_to_sheet(results);
 				/* Add the worksheet to the workbook */
 				XLSX.utils.book_append_sheet(wb, xl, "Data");
-				console.log("Before write");
+
 				return XLSX.write(wb, {
 					type: "buffer"
 				});
