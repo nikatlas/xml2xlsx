@@ -18,6 +18,26 @@ function toUtf8(badstr) {
 		return badstr;
 	}
 }
+
+
+/**
+ * Handle field value if is array or object or single string
+ */
+function toSingleString(field) {
+	if (field === undefined || field === null) {
+		return "";
+	}
+	if(typeof field === "string") {
+		return field;
+	} else if (Array.isArray(field)) {
+		return toSingleString(field[0]);
+	} else if (field["_"]) {
+		return field["_"];
+	}
+
+	return field;
+}
+
 module.exports = {
 	name: "xml2xlsx",
 	version: 1,
@@ -107,10 +127,12 @@ module.exports = {
 				const delimiters = JSON.parse(ctx.params.splitter || "{}");
 				const fields = Object.keys(arr[0]);
 				for(let i in arr){
+					const product = arr[i];
 					for(let j in fields) {
-						arr[i][fields[j]] = swaps[arr[i][fields[j]][0]] ? swaps[arr[i][fields[j]][0]] : arr[i][fields[j]][0];
-						arr[i][fields[j]] = delimiters[fields[j]] ? arr[i][fields[j]].split(delimiters[fields[j]])[0] : arr[i][fields[j]];
-						arr[i][fields[j]] = toUtf8(arr[i][fields[j]]);
+						const field_value = toSingleString(product[fields[j]]);
+						let temp_value = swaps[field_value] ? swaps[field_value] : field_value;
+						temp_value = delimiters[fields[j]] ? temp_value.split(delimiters[fields[j]])[0] : temp_value;
+						arr[i][fields[j]] = toUtf8(temp_value);
 					}
 				}
 				const xl = await XLSX.utils.json_to_sheet(arr);
