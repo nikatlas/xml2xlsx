@@ -8,11 +8,11 @@ services:
     env_file: docker-compose.env
     environment:
       SERVICES: api
-      PORT: 3000
+      PORT: 3100
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
-      - "traefik.http.services.api-gw.loadbalancer.server.port=3000"
+      - "traefik.http.services.api-gw.loadbalancer.server.port=3100"
     
     networks:
       - internal
@@ -61,8 +61,8 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
     ports:
-      - 3000:80
-      - 3001:8080
+      - 3100:80
+      - 3101:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
