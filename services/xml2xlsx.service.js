@@ -144,7 +144,8 @@ module.exports = {
 
 				console.info(`at ${new Date().toISOString()}: Writing result workbook to buffer`);
 				return XLSX.write(wb, {
-					type: "buffer"
+					type: "buffer",
+					compression: true,
 				});
 			}
 		},
