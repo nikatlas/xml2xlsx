@@ -97,6 +97,7 @@ module.exports = {
 				splitter: "string"
 			},
 			async handler(ctx) {
+				console.info(`at ${new Date().toISOString()}: XML2XLSX convert starting`);
 				ctx.meta.$responseType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 				ctx.meta.$responseHeaders = {
 					"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -109,6 +110,7 @@ module.exports = {
 					url: ctx.params.url,
 					//responseType: 'stream'
 				});
+				console.info(`at ${new Date().toISOString()}: File fetched from ${ctx.params.url}`);
 				/* create a new blank workbook */
 				const wb = XLSX.utils.book_new();
 
@@ -135,10 +137,12 @@ module.exports = {
 						arr[i][fields[j]] = toUtf8(temp_value);
 					}
 				}
+				console.info(`at ${new Date().toISOString()}: Converting file to sheet`);
 				const xl = await XLSX.utils.json_to_sheet(arr);
 				/* Add the worksheet to the workbook */
 				XLSX.utils.book_append_sheet(wb, xl, "Sheet 1");
 
+				console.info(`at ${new Date().toISOString()}: Writing result workbook to buffer`);
 				return XLSX.write(wb, {
 					type: "buffer"
 				});
